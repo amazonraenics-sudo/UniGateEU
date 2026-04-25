@@ -4,7 +4,11 @@
       "Bash(npm run *)",
       "Bash(git init *)",
       "Bash(git remote *)",
-      "Bash(git add *)"
+      "Bash(git add *)",
+      "Bash(git branch *)",
+      "Bash(git push *)",
+      "Bash(gh repo *)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" https://api.github.com/repos/amazonraenics-sudo/unigateu)"
     ]
   }
 }
