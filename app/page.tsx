@@ -127,9 +127,86 @@ const PACKS = [
   { name: 'Elite', credits: 500, price: 149, desc: 'Full application season' },
 ]
 
+const JSON_LD = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Organization',
+      '@id': 'https://www.unigateu.com/#organization',
+      name: 'UniGateEU',
+      url: 'https://www.unigateu.com',
+      logo: 'https://www.unigateu.com/opengraph-image.png',
+      description:
+        'UniGateEU helps international students find European universities, write their Statement of Purpose, discover scholarships, and navigate student visas.',
+      sameAs: [],
+    },
+    {
+      '@type': 'WebSite',
+      '@id': 'https://www.unigateu.com/#website',
+      url: 'https://www.unigateu.com',
+      name: 'UniGateEU',
+      publisher: { '@id': 'https://www.unigateu.com/#organization' },
+      potentialAction: {
+        '@type': 'SearchAction',
+        target: 'https://www.unigateu.com/register',
+        'query-input': 'required name=search_term_string',
+      },
+    },
+    {
+      '@type': 'FAQPage',
+      mainEntity: [
+        {
+          '@type': 'Question',
+          name: 'Who is UniGateEU for?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: "UniGateEU is built for international students who want to study in Europe — whether you're applying for a Bachelor's, Master's, or PhD program.",
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'Is it really free to get started?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: "Yes. Every new account gets 10 free credits with no credit card required. That's enough to explore university matches, generate a document checklist, or get visa requirements for your target country.",
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'Which European countries does UniGateEU cover?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'We cover all major European study destinations including Germany, France, the Netherlands, Spain, Italy, Sweden, Norway, Denmark, Poland, and more.',
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'How does the university matching work?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'You fill in your profile — field of study, budget, preferred countries, and academic background. Our matching tool then finds universities that fit your specific situation.',
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'What are credits and how do I get more?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'Credits are used each time you run a tool. You can buy credit packs starting from $9, or start free with 10 signup credits.',
+          },
+        },
+      ],
+    },
+  ],
+}
+
 export default function LandingPage() {
   return (
     <div className="min-h-screen bg-[#0f1923] text-white">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(JSON_LD) }}
+      />
 
       {/* ── NAV ─────────────────────────────────────────── */}
       <nav className="border-b border-white/10 sticky top-0 z-50 bg-[#0f1923]/95 backdrop-blur-sm">
