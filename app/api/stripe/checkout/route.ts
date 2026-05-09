@@ -10,7 +10,7 @@ export async function POST(request: Request) {
   const { priceId } = await request.json()
   if (!priceId) return NextResponse.json({ error: 'Price ID required' }, { status: 400 })
 
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3001'
 
   const session = await stripe.checkout.sessions.create({
     mode: 'payment',

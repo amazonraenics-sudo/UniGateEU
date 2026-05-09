@@ -9,16 +9,21 @@ export async function POST(request: Request) {
   if (!signature) return NextResponse.json({ error: 'No signature' }, { status: 400 })
 
   const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET
-  if (!webhookSecret) {
-    console.warn('STRIPE_WEBHOOK_SECRET not set, skipping webhook verification')
-    return NextResponse.json({ received: true })
-  }
 
   let event
-  try {
-    event = stripe.webhooks.constructEvent(body, signature, webhookSecret)
-  } catch {
-    return NextResponse.json({ error: 'Invalid signature' }, { status: 400 })
+  if (webhookSecret) {
+    try {
+      event = stripe.webhooks.constructEvent(body, signature, webhookSecret)
+    } catch {
+      return NextResponse.json({ error: 'Invalid signature' }, { status: 400 })
+    }
+  } else {
+    // No webhook secret set — parse without verification (dev only)
+    try {
+      event = JSON.parse(body)
+    } catch {
+      return NextResponse.json({ error: 'Invalid body' }, { status: 400 })
+    }
   }
 
   if (event.type === 'checkout.session.completed') {

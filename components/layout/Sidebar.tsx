@@ -4,31 +4,32 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import {
   LayoutDashboard, University, FileText, BookOpen, Award,
-  Globe, Mic, Calculator, CreditCard, LogOut, Coins, Settings
+  Globe, Mic, Calculator, CreditCard, LogOut, Coins, Settings, ClipboardList
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { createClient } from '@/lib/supabase/client'
 import { Badge } from '@/components/ui/badge'
 
 const navItems = [
-  { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { href: '/universities', label: 'Universities', icon: University },
-  { href: '/applications', label: 'Applications', icon: FileText },
-  { href: '/documents', label: 'Documents', icon: BookOpen },
-  { href: '/sop', label: 'SOP Generator', icon: FileText },
-  { href: '/scholarships', label: 'Scholarships', icon: Award },
-  { href: '/visa', label: 'Visa Guide', icon: Globe },
-  { href: '/interview-prep', label: 'Interview Prep', icon: Mic },
-  { href: '/financial-aid', label: 'Financial Aid', icon: Calculator },
-  { href: '/credits', label: 'Buy Credits', icon: CreditCard },
+  { href: '/dashboard',      label: 'Dashboard',     icon: LayoutDashboard },
+  { href: '/universities',   label: 'Universities',  icon: University },
+  { href: '/applications',   label: 'Applications',  icon: FileText },
+  { href: '/documents',      label: 'Documents',     icon: BookOpen },
+  { href: '/sop',            label: 'SOP Generator', icon: FileText },
+  { href: '/scholarships',   label: 'Scholarships',  icon: Award },
+  { href: '/visa',           label: 'Visa Guide',    icon: Globe },
+  { href: '/interview-prep', label: 'Interview Prep',icon: Mic },
+  { href: '/financial-aid',       label: 'Financial Aid',     icon: Calculator },
+  { href: '/document-checklist',  label: 'Doc Checklist',     icon: ClipboardList },
+  { href: '/credits',             label: 'Buy Credits',        icon: CreditCard },
 ]
 
 interface SidebarProps {
   credits?: number
-  userEmail?: string
+  role?: string
 }
 
-export default function Sidebar({ credits = 0, userEmail }: SidebarProps) {
+export default function Sidebar({ credits = 0, role }: SidebarProps) {
   const pathname = usePathname()
   const router = useRouter()
   const supabase = createClient()
@@ -49,7 +50,9 @@ export default function Sidebar({ credits = 0, userEmail }: SidebarProps) {
         <div className="flex items-center gap-2 bg-[#2E86C1]/20 rounded-lg p-3">
           <Coins className="h-4 w-4 text-yellow-400" />
           <span className="text-sm font-medium">{credits} Credits</span>
-          <Link href="/credits" className="ml-auto text-xs text-blue-300 hover:text-white">Top up</Link>
+          <Link href="/credits" className="ml-auto text-xs text-blue-300 hover:text-white">
+            Top up
+          </Link>
         </div>
       </div>
 
@@ -70,18 +73,13 @@ export default function Sidebar({ credits = 0, userEmail }: SidebarProps) {
             >
               <Icon className="h-4 w-4 flex-shrink-0" />
               {item.label}
-              {item.href === '/credits' && (
-                <Badge variant="secondary" className="ml-auto text-xs bg-yellow-500 text-black">
-                  New
-                </Badge>
-              )}
             </Link>
           )
         })}
       </nav>
 
       <div className="p-4 border-t border-[#2E86C1]/30 space-y-1">
-        {userEmail?.includes('admin') && (
+        {role === 'admin' && (
           <Link
             href="/admin"
             className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-blue-200 hover:bg-[#2E86C1]/30 hover:text-white transition-colors"

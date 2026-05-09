@@ -14,11 +14,63 @@ import { Loader2, GraduationCap, Globe, DollarSign, Calendar } from 'lucide-reac
 
 const COUNTRIES = ['Germany', 'France', 'Netherlands', 'Sweden', 'Norway', 'Denmark', 'Switzerland', 'Austria', 'Ireland', 'Belgium']
 const DEGREE_LEVELS = ['Bachelor', 'Master', 'PhD', 'MBA']
-const FIELDS = ['Computer Science', 'Engineering', 'Business', 'Medicine', 'Law', 'Arts', 'Sciences', 'Social Sciences', 'Other']
+const FIELDS = [
+  'Computer Science',
+  'Data Science',
+  'Artificial Intelligence & Machine Learning',
+  'Software Engineering',
+  'Information Technology',
+  'Cybersecurity',
+  'Electrical Engineering',
+  'Mechanical Engineering',
+  'Civil Engineering',
+  'Chemical Engineering',
+  'Biomedical Engineering',
+  'Aerospace Engineering',
+  'Environmental Engineering',
+  'Industrial Engineering',
+  'Medicine (MBBS/MD)',
+  'Pharmacy',
+  'Nursing',
+  'Public Health',
+  'Dentistry',
+  'Biotechnology',
+  'Business Administration (MBA)',
+  'Finance & Banking',
+  'Economics',
+  'Accounting',
+  'Marketing & Communications',
+  'Entrepreneurship',
+  'Supply Chain & Logistics',
+  'Law (LLB/LLM)',
+  'International Relations',
+  'Political Science',
+  'Public Policy & Administration',
+  'Psychology',
+  'Sociology',
+  'Social Work',
+  'Architecture',
+  'Urban Planning',
+  'Interior Design',
+  'Biology & Life Sciences',
+  'Chemistry',
+  'Physics',
+  'Mathematics & Statistics',
+  'Environmental Science',
+  'Agriculture & Food Science',
+  'Veterinary Medicine',
+  'Education & Teaching',
+  'Linguistics & Literature',
+  'History & Philosophy',
+  'Fine Arts & Design',
+  'Media & Film Studies',
+  'Music & Performing Arts',
+]
 
 export default function OnboardingPage() {
   const [step, setStep] = useState(1)
   const [loading, setLoading] = useState(false)
+  const [fieldSelectValue, setFieldSelectValue] = useState('')
   const router = useRouter()
   const { toast } = useToast()
   const supabase = createClient()
@@ -139,10 +191,28 @@ export default function OnboardingPage() {
                 </div>
                 <div className="space-y-2">
                   <Label>Field of Study</Label>
-                  <Select value={form.field_of_study} onValueChange={v => update('field_of_study', v)}>
+                  <Select
+                    value={fieldSelectValue}
+                    onValueChange={v => {
+                      setFieldSelectValue(v)
+                      if (v !== '__other__') update('field_of_study', v)
+                      else update('field_of_study', '')
+                    }}
+                  >
                     <SelectTrigger><SelectValue placeholder="Select field..." /></SelectTrigger>
-                    <SelectContent>{FIELDS.map(f => <SelectItem key={f} value={f}>{f}</SelectItem>)}</SelectContent>
+                    <SelectContent>
+                      {FIELDS.map(f => <SelectItem key={f} value={f}>{f}</SelectItem>)}
+                      <SelectItem value="__other__">Other (please specify)</SelectItem>
+                    </SelectContent>
                   </Select>
+                  {fieldSelectValue === '__other__' && (
+                    <Input
+                      placeholder="Type your field of study..."
+                      value={form.field_of_study}
+                      onChange={e => update('field_of_study', e.target.value)}
+                      autoFocus
+                    />
+                  )}
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">

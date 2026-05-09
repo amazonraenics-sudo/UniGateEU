@@ -18,13 +18,15 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   return (
     <div className="flex h-screen bg-[#F8FAFC]">
       <aside className="hidden md:flex flex-shrink-0">
-        <Sidebar credits={profile?.credits ?? 0} userEmail={user.email} />
+        <Sidebar credits={profile?.credits ?? 0} role={profile?.role} />
       </aside>
       <div className="flex-1 flex flex-col overflow-hidden">
         <TopNav
           userName={profile?.full_name}
           userEmail={user.email}
           avatarUrl={profile?.avatar_url}
+          credits={profile?.credits ?? 0}
+          role={profile?.role}
         />
         <main className="flex-1 overflow-y-auto p-6">
           {children}

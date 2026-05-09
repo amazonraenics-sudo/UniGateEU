@@ -135,35 +135,10 @@ export const CREDIT_COSTS = {
 } as const
 
 export const CREDIT_PACKS: CreditPack[] = [
-  {
-    id: 'starter',
-    name: 'Starter',
-    credits: 20,
-    price: 9,
-    priceId: process.env.STRIPE_STARTER_PRICE_ID || '',
-  },
-  {
-    id: 'standard',
-    name: 'Standard',
-    credits: 75,
-    price: 29,
-    priceId: process.env.STRIPE_STANDARD_PRICE_ID || '',
-    popular: true,
-  },
-  {
-    id: 'pro',
-    name: 'Pro',
-    credits: 200,
-    price: 69,
-    priceId: process.env.STRIPE_PRO_PRICE_ID || '',
-  },
-  {
-    id: 'elite',
-    name: 'Elite',
-    credits: 500,
-    price: 149,
-    priceId: process.env.STRIPE_ELITE_PRICE_ID || '',
-  },
+  { id: 'starter',  name: 'Starter',  credits: 20,  price: 9,   priceId: 'price_1THkODRsnieV0MaAR0LIbHqm' },
+  { id: 'standard', name: 'Standard', credits: 75,  price: 29,  priceId: 'price_1THkQJRsnieV0MaAfCBtgnWq', popular: true },
+  { id: 'pro',      name: 'Pro',      credits: 200, price: 69,  priceId: 'price_1THkS6RsnieV0MaAAh36U7og' },
+  { id: 'elite',    name: 'Elite',    credits: 500, price: 149, priceId: 'price_1THkTlRsnieV0MaANba7gH0S' },
 ]
 
 export const EUROPEAN_COUNTRIES = [

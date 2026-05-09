@@ -26,7 +26,7 @@ export default function ApplicationsPage() {
   const [applications, setApplications] = useState<any[]>([])
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
-  const [form, setForm] = useState({ university_name: '', country: '', program: '', status: 'researching', deadline: '', notes: '' })
+  const [form, setForm] = useState({ university_name: '', program: '', status: 'researching', deadline: '', notes: '' })
   const { toast } = useToast()
   const supabase = createClient()
 
@@ -37,19 +37,24 @@ export default function ApplicationsPage() {
     setApplications(data || [])
   }
 
-  useEffect(() => { fetchApplications() }, [])
+  useEffect(() => { fetchApplications() }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleAdd = async () => {
     setLoading(true)
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return
 
+    const notesWithUni = [
+      form.university_name ? `University: ${form.university_name}` : '',
+      form.notes,
+    ].filter(Boolean).join('\n')
+
     const { error } = await supabase.from('applications').insert({
       user_id: user.id,
       program: form.program,
       status: form.status,
       deadline: form.deadline || null,
-      notes: form.notes || null,
+      notes: notesWithUni || null,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
     })
@@ -59,7 +64,7 @@ export default function ApplicationsPage() {
     } else {
       toast({ title: 'Application added!' })
       setOpen(false)
-      setForm({ university_name: '', country: '', program: '', status: 'researching', deadline: '', notes: '' })
+      setForm({ university_name: '', program: '', status: 'researching', deadline: '', notes: '' })
       fetchApplications()
     }
     setLoading(false)
@@ -98,6 +103,10 @@ export default function ApplicationsPage() {
               <DialogTitle>Add Application</DialogTitle>
             </DialogHeader>
             <div className="space-y-4 pt-2">
+              <div className="space-y-2">
+                <Label>University</Label>
+                <Input placeholder="e.g. TU Delft" value={form.university_name} onChange={e => setForm(p => ({ ...p, university_name: e.target.value }))} />
+              </div>
               <div className="space-y-2">
                 <Label>Program / Degree</Label>
                 <Input placeholder="e.g. MSc Computer Science" value={form.program} onChange={e => setForm(p => ({ ...p, program: e.target.value }))} />
@@ -146,9 +155,10 @@ export default function ApplicationsPage() {
                       <div className="flex items-start justify-between gap-2">
                         <div className="flex-1 min-w-0">
                           <p className="font-medium text-sm truncate">{app.program}</p>
-                          {app.university && (
+                          {(app.university?.name || app.notes?.startsWith('University:')) && (
                             <p className="text-xs text-muted-foreground flex items-center gap-1 mt-0.5">
-                              <MapPin className="h-3 w-3" />{app.university.name}
+                              <MapPin className="h-3 w-3" />
+                              {app.university?.name || app.notes?.split('\n')[0]?.replace('University: ', '')}
                             </p>
                           )}
                           {app.deadline && (

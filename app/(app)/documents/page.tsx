@@ -33,7 +33,7 @@ export default function DocumentsPage() {
     setDocuments(data || [])
   }
 
-  useEffect(() => { fetchDocs() }, [])
+  useEffect(() => { fetchDocs() }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]

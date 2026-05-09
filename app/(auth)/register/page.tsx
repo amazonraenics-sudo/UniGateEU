@@ -37,6 +37,7 @@ export default function RegisterPage() {
     }
 
     if (data.user) {
+      await fetch('/api/auth/sync-user', { method: 'POST' })
       router.push('/onboarding')
     }
     setLoading(false)

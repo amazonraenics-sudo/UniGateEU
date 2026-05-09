@@ -31,6 +31,21 @@ export async function deductCredits(userId: string, amount: number, feature: str
   return { success: true }
 }
 
+export async function refundCredits(userId: string, amount: number, feature: string): Promise<void> {
+  const supabase = createClient()
+  const { data: user } = await supabase.from('users').select('credits').eq('id', userId).single()
+  if (!user) return
+  await supabase.from('users').update({ credits: user.credits + amount }).eq('id', userId)
+  await supabase.from('credit_transactions').insert({
+    user_id: userId,
+    amount,
+    type: 'refund',
+    feature,
+    description: `Refunded ${amount} credits for failed ${feature}`,
+    created_at: new Date().toISOString(),
+  })
+}
+
 export async function getUser(request: Request) {
   const supabase = createClient()
   const { data: { user } } = await supabase.auth.getUser()

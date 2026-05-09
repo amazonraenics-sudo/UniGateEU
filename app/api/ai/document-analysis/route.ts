@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { anthropic, MODEL } from '@/lib/anthropic/client'
-import { deductCredits } from '@/lib/credits'
+import { deductCredits, refundCredits } from '@/lib/credits'
 
 export async function POST(request: Request) {
   const supabase = createClient()
@@ -27,11 +27,17 @@ Provide a comprehensive analysis including:
 
 Be specific and actionable in your feedback. Focus on what European admissions committees look for.`
 
-  const message = await anthropic.messages.create({
-    model: MODEL,
-    max_tokens: 1500,
-    messages: [{ role: 'user', content: prompt }],
-  })
+  let message
+  try {
+    message = await anthropic.messages.create({
+      model: MODEL,
+      max_tokens: 1500,
+      messages: [{ role: 'user', content: prompt }],
+    })
+  } catch {
+    await refundCredits(user.id, 8, 'document_analysis')
+    return NextResponse.json({ error: 'AI service error. Credits refunded.' }, { status: 500 })
+  }
 
   const analysis = message.content[0].type === 'text' ? message.content[0].text : ''
 

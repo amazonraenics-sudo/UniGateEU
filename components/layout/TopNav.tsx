@@ -6,18 +6,22 @@ import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem,
   DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import Sidebar from '@/components/layout/Sidebar'
 
 interface TopNavProps {
   userName?: string
   userEmail?: string
   avatarUrl?: string
+  credits?: number
+  role?: string
 }
 
-export default function TopNav({ userName, userEmail, avatarUrl }: TopNavProps) {
+export default function TopNav({ userName, userEmail, avatarUrl, credits = 0, role }: TopNavProps) {
   const router = useRouter()
   const supabase = createClient()
 
@@ -33,9 +37,18 @@ export default function TopNav({ userName, userEmail, avatarUrl }: TopNavProps) 
   return (
     <header className="h-16 border-b bg-white flex items-center justify-between px-6 sticky top-0 z-10">
       <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon" className="md:hidden">
-          <Menu className="h-5 w-5" />
-        </Button>
+        {/* Mobile sidebar trigger */}
+        <Sheet>
+          <SheetTrigger asChild>
+            <Button variant="ghost" size="icon" className="md:hidden">
+              <Menu className="h-5 w-5" />
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="left" className="p-0 w-64">
+            <Sidebar credits={credits} role={role} />
+          </SheetContent>
+        </Sheet>
+
         <div className="hidden md:block">
           <p className="text-sm text-muted-foreground">
             Welcome back, <span className="font-medium text-foreground">{userName || 'Student'}</span>
@@ -46,7 +59,6 @@ export default function TopNav({ userName, userEmail, avatarUrl }: TopNavProps) 
       <div className="flex items-center gap-3">
         <Button variant="ghost" size="icon" className="relative">
           <Bell className="h-5 w-5" />
-          <span className="absolute top-1 right-1 h-2 w-2 bg-red-500 rounded-full" />
         </Button>
 
         <DropdownMenu>

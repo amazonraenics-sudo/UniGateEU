@@ -1,26 +1,30 @@
 'use client'
 
-import { useState } from 'react'
+import { Suspense, useState } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { useToast } from '@/hooks/use-toast'
-import { Loader2, Zap, CheckCircle2, Coins } from 'lucide-react'
+import { Loader2, Zap, CheckCircle2, Coins, PartyPopper, XCircle } from 'lucide-react'
 import { loadStripe } from '@stripe/stripe-js'
 import { CREDIT_COSTS } from '@/types'
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!)
 
 const PACKS = [
-  { id: 'starter', name: 'Starter', credits: 20, price: 9, priceId: process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY ? 'price_1THkODRsnieV0MaAR0LIbHqm' : '' },
-  { id: 'standard', name: 'Standard', credits: 75, price: 29, popular: true, priceId: 'price_1THkQJRsnieV0MaAfCBtgnWq' },
-  { id: 'pro', name: 'Pro', credits: 200, price: 69, priceId: 'price_1THkS6RsnieV0MaAAh36U7og' },
-  { id: 'elite', name: 'Elite', credits: 500, price: 149, priceId: 'price_1THkTlRsnieV0MaANba7gH0S' },
+  { id: 'starter',  name: 'Starter',  credits: 20,  price: 9,   priceId: 'price_1THkODRsnieV0MaAR0LIbHqm' },
+  { id: 'standard', name: 'Standard', credits: 75,  price: 29,  priceId: 'price_1THkQJRsnieV0MaAfCBtgnWq', popular: true },
+  { id: 'pro',      name: 'Pro',      credits: 200, price: 69,  priceId: 'price_1THkS6RsnieV0MaAAh36U7og' },
+  { id: 'elite',    name: 'Elite',    credits: 500, price: 149, priceId: 'price_1THkTlRsnieV0MaANba7gH0S' },
 ]
 
-export default function CreditsPage() {
+function CreditsContent() {
   const [loading, setLoading] = useState<string | null>(null)
   const { toast } = useToast()
+  const searchParams = useSearchParams()
+  const success = searchParams.get('success')
+  const cancelled = searchParams.get('cancelled')
 
   const handleBuy = async (priceId: string, packId: string) => {
     setLoading(packId)
@@ -43,14 +47,29 @@ export default function CreditsPage() {
     setLoading(null)
   }
 
-  const creditCostEntries = Object.entries(CREDIT_COSTS)
-
   return (
     <div className="space-y-8">
       <div>
         <h1 className="text-2xl font-bold text-[#1E3A5F]">Buy Credits</h1>
         <p className="text-muted-foreground">One-time purchase — no subscriptions, no recurring fees</p>
       </div>
+
+      {success && (
+        <div className="flex items-center gap-3 p-4 bg-green-50 border border-green-200 rounded-lg text-green-800">
+          <PartyPopper className="h-5 w-5 shrink-0" />
+          <div>
+            <p className="font-semibold">Payment successful!</p>
+            <p className="text-sm text-green-700">Your credits have been added. Refresh the page to see your updated balance.</p>
+          </div>
+        </div>
+      )}
+
+      {cancelled && (
+        <div className="flex items-center gap-3 p-4 bg-yellow-50 border border-yellow-200 rounded-lg text-yellow-800">
+          <XCircle className="h-5 w-5 shrink-0" />
+          <p className="text-sm">Payment cancelled — no charge was made.</p>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
         {PACKS.map(pack => (
@@ -64,7 +83,7 @@ export default function CreditsPage() {
               </div>
             )}
             <CardHeader className="text-center pt-6">
-              <div className="flex items-center justify-center gap-1 mb-2">
+              <div className="flex items-center justify-center mb-2">
                 <Coins className={`h-6 w-6 ${pack.popular ? 'text-[#2E86C1]' : 'text-yellow-500'}`} />
               </div>
               <CardTitle className="text-xl">{pack.name}</CardTitle>
@@ -103,15 +122,13 @@ export default function CreditsPage() {
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {creditCostEntries.map(([feature, cost]) => (
+            {Object.entries(CREDIT_COSTS).map(([feature, cost]) => (
               <div key={feature} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                 <div className="flex items-center gap-2">
                   <CheckCircle2 className="h-4 w-4 text-green-500" />
                   <span className="text-sm capitalize">{feature.replace(/_/g, ' ')}</span>
                 </div>
-                <Badge variant="outline" className="font-medium">
-                  {cost} credits
-                </Badge>
+                <Badge variant="outline" className="font-medium">{cost} credits</Badge>
               </div>
             ))}
           </div>
@@ -121,9 +138,17 @@ export default function CreditsPage() {
       <Card className="bg-[#1E3A5F] text-white border-0">
         <CardContent className="pt-6 pb-6 text-center">
           <p className="text-lg font-semibold mb-2">New users get 10 free credits</p>
-          <p className="text-blue-200 text-sm">Enough to run 2 university matches or document checklists</p>
+          <p className="text-blue-200 text-sm">Enough to run 2 university matches or 5 document checklists</p>
         </CardContent>
       </Card>
     </div>
+  )
+}
+
+export default function CreditsPage() {
+  return (
+    <Suspense fallback={<div className="animate-pulse space-y-4"><div className="h-8 bg-gray-200 rounded w-48" /><div className="h-64 bg-gray-200 rounded" /></div>}>
+      <CreditsContent />
+    </Suspense>
   )
 }
