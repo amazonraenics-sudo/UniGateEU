@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import FAQAccordion from '@/components/landing/FAQAccordion'
 import {
   University, FileText, Award, Globe, Mic, Calculator,
   CheckCircle2, Zap, ArrowRight, Coins, Sparkles, Star,
@@ -402,6 +403,9 @@ export default function LandingPage() {
           </Link>
         </div>
       </section>
+
+      {/* ── FAQ ─────────────────────────────────────────── */}
+      <FAQAccordion />
 
       {/* ── FOOTER ──────────────────────────────────────── */}
       <footer className="border-t border-white/5 py-10">
