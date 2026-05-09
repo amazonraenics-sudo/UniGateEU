@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -11,11 +11,19 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useToast } from '@/hooks/use-toast'
 import { Sparkles, Loader2, Copy, RotateCcw, MessageSquare } from 'lucide-react'
 import { EUROPEAN_COUNTRIES } from '@/types'
+import { createClient } from '@/lib/supabase/client'
 
-export default function SOPPage() {
+const DEGREE_LEVELS = ["Bachelor's", "Master's", 'PhD', 'MBA']
+
+function getDocType(degreeLevel: string) {
+  return degreeLevel === "Bachelor's" ? 'Personal Statement' : 'Statement of Purpose'
+}
+
+export default function StatementPage() {
   const [university, setUniversity] = useState('')
   const [program, setProgram] = useState('')
   const [country, setCountry] = useState('')
+  const [degreeLevel, setDegreeLevel] = useState('')
   const [background, setBackground] = useState('')
   const [goals, setGoals] = useState('')
   const [generated, setGenerated] = useState('')
@@ -25,6 +33,18 @@ export default function SOPPage() {
   const [customSop, setCustomSop] = useState('')
   const { toast } = useToast()
 
+  useEffect(() => {
+    const supabase = createClient()
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (!user) return
+      supabase.from('profiles').select('degree_level').eq('user_id', user.id).single().then(({ data }) => {
+        if (data?.degree_level) setDegreeLevel(data.degree_level)
+      })
+    })
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
+  const docType = degreeLevel ? getDocType(degreeLevel) : 'Statement'
+
   const handleGenerate = async () => {
     if (!program) { toast({ title: 'Please enter a program', variant: 'destructive' }); return }
     setLoading(true)
@@ -33,7 +53,7 @@ export default function SOPPage() {
       const res = await fetch('/api/ai/sop', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ university, program, country, background, goals, action: 'generate' }),
+        body: JSON.stringify({ university, program, country, background, goals, degreeLevel, action: 'generate' }),
       })
       if (!res.ok) {
         const d = await res.json()
@@ -57,14 +77,14 @@ export default function SOPPage() {
 
   const handleCritique = async () => {
     const sopToReview = customSop || generated
-    if (!sopToReview) { toast({ title: 'Please generate or paste an SOP first', variant: 'destructive' }); return }
+    if (!sopToReview) { toast({ title: `Please generate or paste a ${docType} first`, variant: 'destructive' }); return }
     setCritiquing(true)
     setCritique('')
     try {
       const res = await fetch('/api/ai/sop', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ sop: sopToReview, action: 'critique' }),
+        body: JSON.stringify({ sop: sopToReview, degreeLevel, action: 'critique' }),
       })
       if (!res.ok) {
         const d = await res.json()
@@ -94,23 +114,37 @@ export default function SOPPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-[#1E3A5F]">SOP Generator</h1>
-        <p className="text-muted-foreground">Generate and improve your Statement of Purpose with AI</p>
+        <h1 className="text-2xl font-bold text-[#1E3A5F]">Statement</h1>
+        <p className="text-muted-foreground">Generate and improve your {docType} with AI</p>
       </div>
 
       <Tabs defaultValue="generate">
         <TabsList>
-          <TabsTrigger value="generate">Generate SOP (10 cr)</TabsTrigger>
-          <TabsTrigger value="critique">Critique SOP (5 cr)</TabsTrigger>
+          <TabsTrigger value="generate">Generate {docType} (10 cr)</TabsTrigger>
+          <TabsTrigger value="critique">Critique {docType} (5 cr)</TabsTrigger>
         </TabsList>
 
         <TabsContent value="generate" className="space-y-4 mt-4">
           <Card>
             <CardHeader>
-              <CardTitle>SOP Details</CardTitle>
+              <CardTitle>{docType} Details</CardTitle>
               <CardDescription>Provide information to generate a tailored statement</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label>Degree Level</Label>
+                <Select value={degreeLevel} onValueChange={setDegreeLevel}>
+                  <SelectTrigger><SelectValue placeholder="Select level..." /></SelectTrigger>
+                  <SelectContent>
+                    {DEGREE_LEVELS.map(d => <SelectItem key={d} value={d}>{d}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+                {degreeLevel && (
+                  <p className="text-xs text-muted-foreground">
+                    Generating a <strong>{docType}</strong> for {degreeLevel} applicants.
+                  </p>
+                )}
+              </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label>University (optional)</Label>
@@ -154,7 +188,7 @@ export default function SOPPage() {
                 disabled={loading || !program}
               >
                 {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
-                {loading ? 'Generating...' : 'Generate SOP'}
+                {loading ? 'Generating...' : `Generate ${docType}`}
               </Button>
             </CardContent>
           </Card>
@@ -162,7 +196,7 @@ export default function SOPPage() {
           {generated && (
             <Card>
               <CardHeader className="flex flex-row items-center justify-between">
-                <CardTitle>Generated SOP</CardTitle>
+                <CardTitle>Generated {docType}</CardTitle>
                 <div className="flex gap-2">
                   <Button variant="outline" size="sm" onClick={() => copyToClipboard(generated)}>
                     <Copy className="h-4 w-4 mr-1" /> Copy
@@ -184,12 +218,12 @@ export default function SOPPage() {
         <TabsContent value="critique" className="space-y-4 mt-4">
           <Card>
             <CardHeader>
-              <CardTitle>Critique Your SOP</CardTitle>
-              <CardDescription>Paste your SOP below or use the generated one above</CardDescription>
+              <CardTitle>Critique Your {docType}</CardTitle>
+              <CardDescription>Paste your statement below or use the generated one above</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <Textarea
-                placeholder="Paste your statement of purpose here..."
+                placeholder={`Paste your ${docType.toLowerCase()} here...`}
                 value={customSop || generated}
                 onChange={e => setCustomSop(e.target.value)}
                 rows={12}

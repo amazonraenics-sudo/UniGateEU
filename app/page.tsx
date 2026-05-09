@@ -218,6 +218,9 @@ export default function LandingPage() {
             <span className="font-bold text-lg tracking-tight">UniGateEU</span>
           </div>
           <div className="flex items-center gap-3">
+            <Link href="/blog" className="text-sm text-white/70 hover:text-white transition-colors px-3 py-1.5 hidden sm:block">
+              Blog
+            </Link>
             <Link href="/login" className="text-sm text-white/70 hover:text-white transition-colors px-3 py-1.5">
               Sign In
             </Link>
@@ -496,9 +499,9 @@ export default function LandingPage() {
           </div>
 
           <div className="flex items-center gap-6 text-sm text-white/40">
+            <Link href="/blog" className="hover:text-white transition-colors">Blog</Link>
             <Link href="/login" className="hover:text-white transition-colors">Sign In</Link>
             <Link href="/register" className="hover:text-white transition-colors">Register</Link>
-            <Link href="/register" className="hover:text-white transition-colors">Features</Link>
           </div>
 
           <p className="text-white/30 text-sm flex items-center gap-1.5">

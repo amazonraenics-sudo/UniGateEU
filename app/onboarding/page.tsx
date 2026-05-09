@@ -13,7 +13,7 @@ import { useToast } from '@/hooks/use-toast'
 import { Loader2, GraduationCap, Globe, DollarSign, Calendar } from 'lucide-react'
 
 const COUNTRIES = ['Germany', 'France', 'Netherlands', 'Sweden', 'Norway', 'Denmark', 'Switzerland', 'Austria', 'Ireland', 'Belgium']
-const DEGREE_LEVELS = ['Bachelor', 'Master', 'PhD', 'MBA']
+const DEGREE_LEVELS = ["Bachelor's", "Master's", 'PhD', 'MBA']
 const FIELDS = [
   'Computer Science',
   'Data Science',

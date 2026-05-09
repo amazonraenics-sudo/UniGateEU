@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import {
   LayoutDashboard, University, FileText, BookOpen, Award,
-  Globe, Mic, Calculator, CreditCard, LogOut, Coins, Settings, ClipboardList
+  Globe, Mic, Calculator, CreditCard, LogOut, Coins, Settings, ClipboardList, Newspaper
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { createClient } from '@/lib/supabase/client'
@@ -15,13 +15,14 @@ const navItems = [
   { href: '/universities',   label: 'Universities',  icon: University },
   { href: '/applications',   label: 'Applications',  icon: FileText },
   { href: '/documents',      label: 'Documents',     icon: BookOpen },
-  { href: '/sop',            label: 'SOP Generator', icon: FileText },
+  { href: '/sop',            label: 'Statement',     icon: FileText },
   { href: '/scholarships',   label: 'Scholarships',  icon: Award },
   { href: '/visa',           label: 'Visa Guide',    icon: Globe },
   { href: '/interview-prep', label: 'Interview Prep',icon: Mic },
   { href: '/financial-aid',       label: 'Financial Aid',     icon: Calculator },
   { href: '/document-checklist',  label: 'Doc Checklist',     icon: ClipboardList },
   { href: '/credits',             label: 'Buy Credits',        icon: CreditCard },
+  { href: '/blog',                label: 'Blog',               icon: Newspaper },
 ]
 
 interface SidebarProps {

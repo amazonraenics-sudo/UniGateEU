@@ -8,7 +8,15 @@
       "Bash(git branch *)",
       "Bash(git push *)",
       "Bash(gh repo *)",
-      "Bash(curl -s -o /dev/null -w \"%{http_code}\" https://api.github.com/repos/amazonraenics-sudo/unigateu)"
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" https://api.github.com/repos/amazonraenics-sudo/unigateu)",
+      "Bash(node -e \"const {createBrowserClient} = require\\('@supabase/ssr'\\); console.log\\(typeof createBrowserClient\\)\")",
+      "Bash(Get-ChildItem -Path \"c:\\\\Users\\\\ROY\\\\Desktop\\\\UniGateEU\" -Recurse -Directory)",
+      "Bash(Select-Object -ExpandProperty FullName)",
+      "Bash(npx kill-port *)",
+      "Bash(ping -n 5 127.0.0.1 > nul && type \"C:\\\\Users\\\\ROY\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\c--Users-ROY-Desktop-UniGateEU\\\\1bf68456-244a-4eaf-b3ed-11252ac07dc0\\\\tasks\\\\bpthjmpeu.output\")"
+    ],
+    "additionalDirectories": [
+      "c:\\Users\\ROY\\Desktop\\UniGateEU"
     ]
   }
 }

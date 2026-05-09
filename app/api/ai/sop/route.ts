@@ -8,7 +8,7 @@ export async function POST(request: Request) {
   if (!user) return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401 })
 
   const body = await request.json()
-  const { action, university, program, country, background, goals, sop } = body
+  const { action, university, program, country, background, goals, sop, degreeLevel } = body
 
   const cost = action === 'generate' ? 10 : 5
   const feature = action === 'generate' ? 'sop_generation' : 'sop_critique'
@@ -16,10 +16,13 @@ export async function POST(request: Request) {
   const deduct = await deductCredits(user.id, cost, feature)
   if (!deduct.success) return new Response(JSON.stringify({ error: deduct.error }), { status: 402 })
 
+  const isUndergrad = degreeLevel === "Bachelor's"
+  const docType = isUndergrad ? 'Personal Statement' : 'Statement of Purpose'
+
   let prompt = ''
 
   if (action === 'generate') {
-    prompt = `Write a compelling Statement of Purpose for a student applying to ${program}${university ? ` at ${university}` : ''}${country ? ` in ${country}` : ''}.
+    prompt = `Write a compelling ${docType} for a ${degreeLevel || 'graduate'} student applying to ${program}${university ? ` at ${university}` : ''}${country ? ` in ${country}` : ''}.
 
 Student Background:
 ${background || 'Not provided'}
@@ -27,18 +30,25 @@ ${background || 'Not provided'}
 Goals and Motivation:
 ${goals || 'Not provided'}
 
-Write a professional, authentic 600-800 word SOP that:
-1. Opens with a compelling hook
-2. Highlights academic and professional achievements
-3. Explains specific interest in the program and university
-4. Shows clear career goals
-5. Concludes with a strong statement
+${isUndergrad
+  ? `Write a professional, authentic 500-700 word Personal Statement that:
+1. Opens with a personal story or compelling hook about their passion for the subject
+2. Describes relevant academic achievements, extracurriculars, and experiences
+3. Explains why this specific program excites them
+4. Shows maturity, self-awareness, and clear motivation
+5. Concludes with a forward-looking statement about their ambitions`
+  : `Write a professional, authentic 600-800 word Statement of Purpose that:
+1. Opens with a compelling hook about their research or professional interest
+2. Highlights academic and professional achievements relevant to the program
+3. Explains specific interest in the program, faculty, or research areas
+4. Shows clear career and research goals
+5. Concludes with a strong statement of fit and intent`}
 
-Write the SOP directly without any preamble or meta-commentary.`
+Write the ${docType} directly without any preamble or meta-commentary.`
   } else {
-    prompt = `Critique the following Statement of Purpose and provide detailed, actionable feedback.
+    prompt = `Critique the following ${docType} and provide detailed, actionable feedback.
 
-SOP:
+${docType}:
 ${sop}
 
 Provide feedback on:
