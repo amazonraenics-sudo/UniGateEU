@@ -144,12 +144,22 @@ export default function ScholarshipsPage() {
                     </ul>
                   </div>
                 )}
-                {s.link && (
-                  <a href={s.link} target="_blank" rel="noopener noreferrer"
-                    className="flex items-center gap-1 text-xs text-[#2E86C1] hover:underline">
-                    Apply Now <ExternalLink className="h-3 w-3" />
+                <div className="flex items-center gap-4 pt-1">
+                  {s.link && (
+                    <a href={s.link} target="_blank" rel="noopener noreferrer"
+                      className="flex items-center gap-1 text-xs text-[#2E86C1] hover:underline">
+                      Official Site <ExternalLink className="h-3 w-3" />
+                    </a>
+                  )}
+                  <a
+                    href={`https://www.google.com/search?q=${encodeURIComponent(`${s.name} ${s.provider} scholarship apply`)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-1 text-xs text-gray-500 hover:text-[#2E86C1] hover:underline"
+                  >
+                    Find Application <ExternalLink className="h-3 w-3" />
                   </a>
-                )}
+                </div>
               </CardContent>
             </Card>
           ))}

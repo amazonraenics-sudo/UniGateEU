@@ -24,6 +24,8 @@ export async function POST(request: Request) {
 
 Include well-known scholarships like DAAD, Erasmus+, Orange Tulip, etc. and country-specific ones.
 
+For the "link" field: only provide the top-level official homepage of the awarding organisation (e.g. "https://www.daad.de" or "https://ec.europa.eu"). Do NOT invent or guess deep URLs or specific application-page paths — if you are not 100% certain of the exact homepage URL, set "link" to null.
+
 Respond with JSON:
 {
   "summary": "Overview of scholarship opportunities",
@@ -38,7 +40,7 @@ Respond with JSON:
       "eligibility": ["Requirement 1", "Requirement 2"],
       "fields": ["Computer Science", "Engineering"],
       "description": "Brief description",
-      "link": "https://scholarship-url.org"
+      "link": "https://official-homepage.org"
     }
   ]
 }`
