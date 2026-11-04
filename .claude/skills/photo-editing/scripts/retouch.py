@@ -54,7 +54,16 @@ def split_frequencies(rgb: np.ndarray, radius: float) -> tuple[np.ndarray, np.nd
 
 
 def cmd_skin(a, rgb):
-    mask = load_mask(a.mask, rgb.shape[:2], a.feather) if a.mask else auto_skin_mask(rgb, a.feather or 4)
+    if a.mask:
+        mask = load_mask(a.mask, rgb.shape[:2], a.feather)
+    else:
+        # Colour-only detection also catches tan/brown fabric, wood and hair, so restrict it
+        # to a face/body region whenever one is given (see make_mask.py).
+        mask = auto_skin_mask(rgb, a.feather or 4)
+        if a.region:
+            mask = mask * load_mask(a.region, rgb.shape[:2])
+        else:
+            print("Warning: no --mask/--region; colour-only skin mask may include clothing or background.")
     low, high = split_frequencies(rgb, a.radius)
     # Smooth only the low-frequency layer, edge-aware so jaw/nose/lip contours don't bleed.
     low8 = np.clip(low * 255, 0, 255).astype(np.uint8)
@@ -133,6 +142,7 @@ def main() -> None:
     p.add_argument("--strength", type=float, default=0.6, help="0..1 low-freq evening")
     p.add_argument("--tone-sigma", type=float, default=25.0, help="bilateral colour sigma")
     p.add_argument("--texture", type=float, default=1.0, help="high-freq multiplier (1.0 = untouched)")
+    p.add_argument("--region", help="mask limiting the auto skin detection (e.g. face ellipse from make_mask.py)")
 
     p = sub.add_parser("whiten"); common(p)
     p.add_argument("--desat", type=float, default=0.15, help="yellow/magenta reduction 0.10–0.20")

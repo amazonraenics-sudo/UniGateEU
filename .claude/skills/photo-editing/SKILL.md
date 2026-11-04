@@ -45,6 +45,7 @@ Scripts live in `.claude/skills/photo-editing/scripts/` (call them by path from 
 | `analyze.py img [--json]` | Read-only diagnostics: percentiles, EV offset, clipping %, Lab cast, CCT, saturation, sharpness, noise, visual-mass centre, plain-English notes |
 | `grade.py img [--preset cinematic\|commercial\|airy\|mono] [flags]` | WB (auto/whitepatch/temp/tint), linear-light exposure, levels, black lift, S-curve, shadow crush, split-tone by hue°, saturation/vibrance, `.cube` 3D LUT (trilinear) w/ strength, optional `--mask` |
 | `retouch.py skin\|whiten\|eyes\|sharpen\|denoise\|fsep img [flags]` | Frequency-separation skin, teeth/sclera whitening (EV cap +0.3), iris clarity + catchlights, luminance sharpening, NLM denoise, export freq layers |
+| `make_mask.py img --ellipse/--circle/--rect … [--exclude …] [--preview]` | Build masks from coordinates you read off the image (face region, irises, teeth, removal areas); `--preview` writes a red overlay to check placement |
 | `compare.py before after` | Side-by-side + diff heat-map + Δ stats |
 
 Tool choice:
@@ -79,7 +80,11 @@ Always supply or describe the mask: dilate 8–16 px, include cast/contact shado
 ### A. Editorial portrait retouch
 - **Skin**: frequency separation only — even blotchy colour/tone in the low-frequency layer, keep the high-frequency
   layer (pores, fine hairs) at 100%. **Never flat Gaussian blur.**
-  `python3 $S/retouch.py skin in.jpg --radius 8 --strength 0.5 [--mask skin.png] --save-mask`
+  `python3 $S/retouch.py skin in.jpg --radius 8 --strength 0.5 --region face_region.png --save-mask`
+  The colour-only skin detector also matches tan/brown clothing, wood and hats, so always pass `--region`
+  (a face ellipse from `make_mask.py` with eyes/brows/lips excluded) or a full `--mask`. Locate features on
+  the image, convert preview coordinates to original pixels, and check placement with `--preview`.
+  OpenCV 5 has no Haar face detector, so finding faces is done by looking at the image, not automatically.
   Radius ≈ size of the blemishes to even out (6–10 px at 24 MP headshot, smaller for web-size).
   Strength 0.3–0.6 natural, >0.7 beauty-campaign. Prefer a painted/AI skin mask that excludes eyes, brows, lips, hair.
 - **Teeth & sclera**: 10–20% yellow/magenta desaturation, ≤ +0.3 EV lift, mask required.
