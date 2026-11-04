@@ -34,3 +34,7 @@ yarn-error.log*
 next-env.d.ts
 
 .vercel
+
+# photo-editing skill outputs
+/output/
+__pycache__/
